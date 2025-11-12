@@ -2,17 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+
 import { Calendar, DollarSign, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button, Input, Label, Card, CardContent } from "@/components/ui";
 import { useAuthStore } from "@/store/authStore";
 
 export default function AuthPage() {
@@ -28,17 +20,7 @@ export default function AuthPage() {
   const login = useAuthStore((state) => state.login);
 
   const handleSubmit = async () => {
-    // TODO: Call your backend API here
     console.log("Form submitted:", formData);
-
-    // Example: After successful API call
-    // login({
-    //   id: response.id,
-    //   email: formData.email,
-    //   name: formData.name,
-    //   role: formData.role,
-    //   hourlyRate: parseFloat(formData.hourlyRate)
-    // });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,22 +29,22 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 text-foreground">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex justify-center items-center space-x-2 mb-4">
-            <Calendar className="w-10 h-10 text-black" />
-            <span className="text-3xl font-bold text-black">MeetBook</span>
+            <Calendar className="w-10 h-10 text-foreground" />
+            <span className="text-3xl font-bold text-foreground">MeetBook</span>
           </div>
-          <h2 className="text-2xl font-bold text-black">
+          <h2 className="text-2xl font-bold text-foreground">
             {isLogin ? "Welcome Back" : "Create Your Account"}
           </h2>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             {isLogin ? "Sign in to continue" : "Join our marketplace today"}
           </p>
         </div>
 
-        <Card>
+        <Card className="bg-card text-card-foreground">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div>
@@ -113,13 +95,15 @@ export default function AuthPage() {
                         }
                         className={`p-4 rounded-lg border-2 transition-all ${
                           formData.role === "client"
-                            ? "border-black bg-gray-50"
-                            : "border-gray-200 hover:border-gray-300"
+                            ? "border-primary bg-card"
+                            : "border-border hover:border-border"
                         }`}
                       >
-                        <Users className="w-6 h-6 mx-auto mb-2 text-black" />
-                        <div className="font-medium text-black">Client</div>
-                        <div className="text-xs text-gray-600">
+                        <Users className="w-6 h-6 mx-auto mb-2 text-foreground" />
+                        <div className="font-medium text-foreground">
+                          Client
+                        </div>
+                        <div className="text-xs text-muted-foreground">
                           Book meetings
                         </div>
                       </button>
@@ -130,13 +114,17 @@ export default function AuthPage() {
                         }
                         className={`p-4 rounded-lg border-2 transition-all ${
                           formData.role === "provider"
-                            ? "border-black bg-gray-50"
-                            : "border-gray-200 hover:border-gray-300"
+                            ? "border-primary bg-card"
+                            : "border-border hover:border-border"
                         }`}
                       >
-                        <Calendar className="w-6 h-6 mx-auto mb-2 text-black" />
-                        <div className="font-medium text-black">Provider</div>
-                        <div className="text-xs text-gray-600">Offer slots</div>
+                        <Calendar className="w-6 h-6 mx-auto mb-2 text-foreground" />
+                        <div className="font-medium text-foreground">
+                          Provider
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Offer slots
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -144,7 +132,7 @@ export default function AuthPage() {
                   <div>
                     <Label htmlFor="hourlyRate">Hourly Rate (USD)</Label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
                         id="hourlyRate"
                         type="number"
@@ -157,7 +145,7 @@ export default function AuthPage() {
                         placeholder="50.00"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {formData.role === "provider"
                         ? "Rate you charge clients per hour"
                         : "Your budget for booking sessions"}
@@ -174,17 +162,17 @@ export default function AuthPage() {
             <div className="mt-6 text-center">
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-gray-600 hover:text-black"
+                className="text-sm text-muted-foreground hover:text-foreground"
               >
                 {isLogin ? (
                   <>
                     Don't have an account?{" "}
-                    <span className="font-medium text-black">Sign up</span>
+                    <span className="font-medium text-foreground">Sign up</span>
                   </>
                 ) : (
                   <>
                     Already have an account?{" "}
-                    <span className="font-medium text-black">Sign in</span>
+                    <span className="font-medium text-foreground">Sign in</span>
                   </>
                 )}
               </button>
@@ -193,7 +181,7 @@ export default function AuthPage() {
         </Card>
 
         <Link href="/">
-          <Button variant="ghost" className="mt-4 w-full">
+          <Button variant="ghost" className="mt-4 w-full text-foreground">
             ← Back to Home
           </Button>
         </Link>
