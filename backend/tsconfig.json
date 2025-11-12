@@ -3,6 +3,10 @@
     /* Output */
     "rootDir": "./",
     "outDir": "./dist",
+    "baseUrl": "./src",  
+    "paths": {
+      "@*": ["*"]         
+    },
     
     /* Language & Module Settings */
     "target": "ES2020",
