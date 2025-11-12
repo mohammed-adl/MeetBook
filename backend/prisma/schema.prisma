@@ -12,6 +12,7 @@ model User {
   id         String   @id @default(uuid())
   email      String   @unique
   name       String
+  password   String
   role       ROLES
   hourlyRate Decimal
   createdAt  DateTime @default(now())
