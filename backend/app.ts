@@ -1,16 +1,16 @@
 import express from "express";
 const app = express();
 
-// import { setupRoutes } from "./src/routes/v1/index.js";
+import { setupRoutes } from "./src/routes/v1/index.js";
 import { registerMiddlewares, errorHandler, notFound } from "@middlewares";
 
-// registerMiddlewares(app);
+registerMiddlewares(app);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// setupRoutes(app);
+setupRoutes(app);
 
 app.use(notFound);
 app.use(errorHandler);

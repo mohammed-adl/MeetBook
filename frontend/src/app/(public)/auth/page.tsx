@@ -2,30 +2,66 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 import { Calendar, DollarSign, Users } from "lucide-react";
 import { Button, Input, Label, Card, CardContent } from "@/components/ui";
 import { useAuthStore } from "@/store/authStore";
+import { handleSignup, handleLogin } from "@/fetchers";
+import authService from "@/services/authService";
 
 export default function AuthPage() {
+  const router = useRouter();
+  const loginStore = useAuthStore((state) => state.login); // Zustand action
+
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
-    role: "client" as "client" | "provider",
+    role: "CLIENT" as "CLIENT" | "PROVIDER",
     hourlyRate: "",
   });
 
-  const login = useAuthStore((state) => state.login);
-
-  const handleSubmit = async () => {
-    console.log("Form submitted:", formData);
-  };
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    setServerError(null);
+    setIsSubmitting(true);
+
+    try {
+      let body;
+
+      if (isLogin) {
+        body = await handleLogin({
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        body = await handleSignup({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          role: formData.role,
+          hourlyRate: formData.hourlyRate,
+        });
+      }
+
+      authService.setTokens(body.token, body.refreshToken);
+
+      loginStore(body.user);
+
+      router.push("/dashboard");
+    } catch (err: any) {
+      setServerError(err.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -47,6 +83,12 @@ export default function AuthPage() {
         <Card className="bg-card text-card-foreground">
           <CardContent className="pt-6">
             <div className="space-y-4">
+              {serverError && (
+                <p className="text-sm text-red-500 text-center">
+                  {serverError}
+                </p>
+              )}
+
               <div>
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -56,6 +98,7 @@ export default function AuthPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
+                  required
                 />
               </div>
 
@@ -68,6 +111,7 @@ export default function AuthPage() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
+                  required
                 />
               </div>
 
@@ -82,6 +126,7 @@ export default function AuthPage() {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="John Doe"
+                      required
                     />
                   </div>
 
@@ -91,10 +136,10 @@ export default function AuthPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setFormData((prev) => ({ ...prev, role: "client" }))
+                          setFormData((prev) => ({ ...prev, role: "CLIENT" }))
                         }
                         className={`p-4 rounded-lg border-2 transition-all ${
-                          formData.role === "client"
+                          formData.role === "CLIENT"
                             ? "border-primary bg-card"
                             : "border-border hover:border-border"
                         }`}
@@ -107,13 +152,14 @@ export default function AuthPage() {
                           Book meetings
                         </div>
                       </button>
+
                       <button
                         type="button"
                         onClick={() =>
-                          setFormData((prev) => ({ ...prev, role: "provider" }))
+                          setFormData((prev) => ({ ...prev, role: "PROVIDER" }))
                         }
                         className={`p-4 rounded-lg border-2 transition-all ${
-                          formData.role === "provider"
+                          formData.role === "PROVIDER"
                             ? "border-primary bg-card"
                             : "border-border hover:border-border"
                         }`}
@@ -143,19 +189,23 @@ export default function AuthPage() {
                         step="0.01"
                         className="pl-10"
                         placeholder="50.00"
+                        required
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formData.role === "provider"
-                        ? "Rate you charge clients per hour"
-                        : "Your budget for booking sessions"}
-                    </p>
                   </div>
                 </>
               )}
 
-              <Button onClick={handleSubmit} className="w-full">
-                {isLogin ? "Sign In" : "Create Account"}
+              <Button
+                onClick={handleSubmit}
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? "Please wait..."
+                  : isLogin
+                  ? "Sign In"
+                  : "Create Account"}
               </Button>
             </div>
 
