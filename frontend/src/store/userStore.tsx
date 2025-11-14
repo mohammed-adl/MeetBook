@@ -5,6 +5,7 @@ import authService from "@/services/authService";
 interface User {
   id: string;
   email: string;
+  username: string;
   name: string;
   role: "CLIENT" | "PROVIDER";
   hourlyRate: number;

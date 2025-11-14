@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
 import { LoadingScreen } from "@/components/ui";
@@ -8,14 +8,19 @@ import { LoadingScreen } from "@/components/ui";
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      router.replace("/dashboard");
+    if (user !== undefined) {
+      if (user?.username) {
+        router.replace(`/${user.username}`);
+      } else {
+        setIsChecking(false);
+      }
     }
   }, [user, router]);
 
-  if (user === undefined) return <LoadingScreen />;
+  if (isChecking || user === undefined) return <LoadingScreen />;
 
   return <>{children}</>;
 }

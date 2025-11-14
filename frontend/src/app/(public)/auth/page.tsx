@@ -60,7 +60,7 @@ export default function AuthPage() {
 
       authService.setTokens(body.accessToken, body.refreshToken);
       setUser(body.user);
-      router.push("/dashboard");
+      router.push(`/${body.user.username}`);
     } catch (err: any) {
       setServerError(err.message || "Something went wrong.");
     } finally {
