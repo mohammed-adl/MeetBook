@@ -5,7 +5,10 @@ import { validateToken } from "@middlewares";
 
 import * as slotController from "@controllers/slot";
 
-router.get("/provider/slots", validateToken, slotController.getProviderSlots);
-router.get("/stats", validateToken, slotController.getProviderSlots);
+router.get("/stats", validateToken, slotController.getProviderSlotsStats);
+
+router.post("/", validateToken, slotController.createSlot);
+
+router.get("/:username", validateToken, slotController.getProviderSlots);
 
 export default router;

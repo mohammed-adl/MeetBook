@@ -1,2 +1,2 @@
 export * from "./getProvider";
-export * from "./getProviderSlots";
+export * from "../slot/getProviderSlots";
