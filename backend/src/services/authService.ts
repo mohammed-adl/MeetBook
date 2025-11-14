@@ -12,11 +12,11 @@ import {
 const ACCESS_SECRET = process.env.ACCESS_SECRET!;
 const REFRESH_SECRET = process.env.REFRESH_SECRET!;
 
-// Types
 interface CreateUserData {
   email: string;
   password: string;
   name: string;
+  username: string;
   role: any;
   hourlyRate: number;
 }
@@ -46,6 +46,7 @@ const authService = {
         data: {
           email: data.email,
           name: data.name,
+          username: data.username,
           password: hashedPassword,
           role: data.role,
           hourlyRate: data.hourlyRate,
