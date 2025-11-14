@@ -48,7 +48,7 @@ api.interceptors.response.use(
         refreshing = (async () => {
           try {
             const body = await authService.callRefreshToken();
-            authService.setTokens(body.token, body.refreshToken);
+            authService.setTokens(body.accessToken, body.refreshToken);
           } catch (err) {
             authService.logout();
             throw err;
@@ -60,8 +60,9 @@ api.interceptors.response.use(
 
       try {
         await refreshing;
-        const token = localStorage.getItem("token");
-        if (token) config.headers["Authorization"] = `Bearer ${token}`;
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken)
+          config.headers["Authorization"] = `Bearer ${accessToken}`;
         return api(config);
       } catch (err) {
         return Promise.reject(error);
@@ -97,7 +98,7 @@ export async function reqApi<T = any>(
   url: string,
   options: ReqApiOptions = {}
 ): Promise<T> {
-  const token = localStorage.getItem("token");
+  const accessToken = localStorage.getItem("accessToken");
 
   const isMultipart = options.body instanceof FormData;
 
@@ -107,7 +108,7 @@ export async function reqApi<T = any>(
     headers: {
       ...(isMultipart ? {} : { "Content-Type": "application/json" }),
       ...(options.headers || {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     },
     data: options.body || undefined,
     params: options.params || undefined,

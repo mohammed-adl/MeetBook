@@ -1,4 +1,7 @@
 import { Calendar as CalendarIcon, Clock, DollarSign } from "lucide-react";
+import { handleGetSlotsStats } from "@/fetchers";
+import { useQuery } from "@tanstack/react-query";
+import { useUserStore } from "@/store/userStore";
 
 interface StatItem {
   icon: React.ReactNode;
@@ -6,27 +9,42 @@ interface StatItem {
   value: string | number;
 }
 
-export default function Stats({ stats }: { stats: any }) {
+export default function Stats() {
+  const user = useUserStore((state) => state.user);
+  const userId = user?.id;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["slotsStats", userId],
+    queryFn: () => handleGetSlotsStats(),
+    enabled: !!userId,
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  const slots = data?.slots;
+
+  const stats = {
+    totalSlots: slots?.totalSlots,
+    availableSlots: slots?.availableSlots,
+    bookedSlots: slots?.bookedSlots,
+    Earnings: 0,
+  };
+
   const statItems: StatItem[] = [
     { icon: <CalendarIcon />, label: "Total Slots", value: stats.totalSlots },
     { icon: <Clock />, label: "Available", value: stats.availableSlots },
     { icon: <CalendarIcon />, label: "Booked", value: stats.bookedSlots },
     {
       icon: <DollarSign />,
-      label: "Confirmed Earnings",
-      value: `$${stats.confirmedEarnings}`,
+      label: "Earnings",
+      value: `$${stats.Earnings}`,
     },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {statItems.map((item, idx) => (
-        <StatCard
-          key={idx}
-          icon={item.icon}
-          label={item.label}
-          value={item.value}
-        />
+        <StatCard key={idx} {...item} />
       ))}
     </div>
   );
@@ -48,8 +66,9 @@ function StatCard({
           {icon}
         </div>
         <div>
-          <p className="text-2xl font-bold">{value}</p>
           <p className="text-sm text-muted-foreground">{label}</p>
+
+          <p className="text-2xl font-bold">{value}</p>
         </div>
       </div>
     </section>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { UserInitializer } from "@/components/UserInitializer";
 import SplashWrapper from "@/components/SplashWrapper";
+import QueryProvider from "@/components/QueryProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,17 +23,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SplashWrapper>
-          <UserInitializer>{children}</UserInitializer>
-        </SplashWrapper>
+        <QueryProvider>
+          <SplashWrapper>
+            <UserInitializer>{children}</UserInitializer>
+          </SplashWrapper>
+        </QueryProvider>
       </body>
     </html>
   );

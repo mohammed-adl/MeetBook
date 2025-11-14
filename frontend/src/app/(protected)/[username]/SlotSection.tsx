@@ -24,7 +24,7 @@ export default function SlotSection({
           onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 cursor-pointer" />
           Create Slot
         </button>
       </div>

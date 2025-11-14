@@ -5,6 +5,7 @@ import { validateToken } from "@middlewares";
 
 import * as slotController from "@controllers/slot";
 
-router.get("/stats", validateToken, slotController.getSlotsStats);
+router.get("/provider/slots", validateToken, slotController.getProviderSlots);
+router.get("/stats", validateToken, slotController.getProviderSlots);
 
 export default router;

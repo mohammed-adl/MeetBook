@@ -6,11 +6,7 @@ import { Provider, Slot, FormDataType } from "@/types/provider";
 
 import SlotModal from "./SlotModal";
 import SlotSection from "./SlotSection";
-import {
-  calculateDuration,
-  calculateEarnings,
-  generateNewSlotId,
-} from "./helpers";
+import { calculateDuration, generateNewSlotId } from "./helpers";
 
 import { dummyProvider, dummySlots } from "./data";
 import Stats from "./Stats";
@@ -84,20 +80,6 @@ export default function ProviderDashboard() {
     closeModal();
   };
 
-  const stats = {
-    totalSlots: slots.length,
-    availableSlots: slots.filter((s) => s.status === "available").length,
-    bookedSlots: slots.filter((s) => s.status === "booked").length,
-    confirmedEarnings: slots
-      .filter((s) => s.status === "booked")
-      .reduce(
-        (sum, s) =>
-          sum + Number(calculateEarnings(s.duration, provider.hourlyRate)),
-        0
-      )
-      .toFixed(2),
-  };
-
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
@@ -123,7 +105,7 @@ export default function ProviderDashboard() {
           </div>
         </article>
 
-        <Stats stats={stats} />
+        <Stats />
 
         <SlotSection
           slots={slots}
