@@ -28,11 +28,11 @@ model User {
 }
 
 model Slot {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   startTime DateTime
   endTime   DateTime
   duration  Int
-  status    String
+  status    SLOT_STATUS
 
   bookedBy String?
 
@@ -56,4 +56,9 @@ model RefreshToken {
 enum ROLES {
   CLIENT
   PROVIDER
+}
+
+enum SLOT_STATUS {
+  AVAILABLE
+  BOOKED
 }
