@@ -1,68 +1,94 @@
 "use client";
 
 import { useState } from "react";
-import { Slot } from "@/types/provider";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 import SlotModal from "./SlotModal";
 import SlotSection from "./SlotSection";
-
 import StatsSection from "./StatsSection";
-import { handleGetProvider } from "@/fetchers";
+import { handleGetProvider, handleCreateSlot } from "@/fetchers";
 
 export default function ProviderDashboard() {
   const params = useParams();
   const username = params.username as string;
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["provider", username],
-    queryFn: () => handleGetProvider(username!),
+    queryFn: () => handleGetProvider(username),
     enabled: !!username,
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSlot, setEditingSlot] = useState<Slot | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     date: "",
     startHour: "",
     endHour: "",
   });
 
+  const provider = data?.provider;
+  const hourlyRate = provider?.hourlyRate ?? 0;
+
+  const startHourNum = form.startHour ? Number(form.startHour) : null;
+  const endHourNum = form.endHour ? Number(form.endHour) : null;
+
+  const hours =
+    startHourNum !== null && endHourNum !== null && endHourNum > startHourNum
+      ? endHourNum - startHourNum
+      : 0;
+
+  const cost = hours * hourlyRate;
+
   const openCreateModal = () => {
-    setEditingSlot(null);
-    setFormData({ date: "", startHour: "", endHour: "" });
+    setForm({ date: "", startHour: "", endHour: "" });
+
     setIsModalOpen(true);
   };
 
-  const openEditModal = (slot: Slot) => {
-    setEditingSlot(slot);
-    setFormData({
-      date: slot.startTime.split("T")[0],
-      startHour: new Date(slot.startTime).getHours().toString(),
-      endHour: new Date(slot.endTime).getHours().toString(),
-    });
-    setIsModalOpen(true);
-  };
+  const closeModal = () => setIsModalOpen(false);
 
-  const closeModal = () => {
-    setEditingSlot(null);
-    setIsModalOpen(false);
-  };
+  const handleSubmit = async () => {
+    const { date, startHour, endHour } = form;
 
-  const handleSubmit = (data: any) => {
-    console.log("Submit new/edit slot → send to backend", data);
+    const start = new Date(
+      Date.UTC(
+        Number(date.slice(0, 4)),
+        Number(date.slice(5, 7)) - 1,
+        Number(date.slice(8, 10)),
+        Number(startHour)
+      )
+    );
 
-    // You will add mutation here once backend endpoint is ready
+    const end = new Date(
+      Date.UTC(
+        Number(date.slice(0, 4)),
+        Number(date.slice(5, 7)) - 1,
+        Number(date.slice(8, 10)),
+        Number(endHour)
+      )
+    );
 
-    closeModal();
+    const payload = {
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
+      cost,
+    };
+
+    try {
+      await handleCreateSlot(payload);
+      queryClient.invalidateQueries({ queryKey: ["slots", username] });
+      queryClient.invalidateQueries({ queryKey: ["slotsStats", provider.id] });
+      closeModal();
+    } catch (err) {
+      console.log("Error creating slot", err);
+    }
   };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-
-  const provider = data?.provider;
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -88,22 +114,19 @@ export default function ProviderDashboard() {
 
         <StatsSection />
 
-        <SlotSection
-          username={username}
-          openCreateModal={openCreateModal}
-          openEditModal={openEditModal}
-        />
+        <SlotSection username={username} openCreateModal={openCreateModal} />
       </div>
 
       {isModalOpen && (
         <SlotModal
-          isOpen={true}
-          mode={editingSlot ? "edit" : "create"}
-          slot={editingSlot}
+          mode="create"
           onClose={closeModal}
           onSubmit={handleSubmit}
-          formData={formData}
-          setFormData={setFormData}
+          form={form}
+          setForm={setForm}
+          hours={hours}
+          cost={cost}
+          hourlyRate={hourlyRate}
         />
       )}
     </div>
