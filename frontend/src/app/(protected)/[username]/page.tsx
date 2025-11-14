@@ -2,32 +2,31 @@
 
 import { useState } from "react";
 import { useUserStore } from "@/store/userStore";
-import { Provider, Slot, FormDataType } from "@/types/provider";
+import { Slot } from "@/types/provider";
 
 import SlotModal from "./SlotModal";
 import SlotSection from "./SlotSection";
 import { calculateDuration, generateNewSlotId } from "./helpers";
 
-import { dummyProvider, dummySlots } from "./data";
+import { dummySlots } from "./data";
 import Stats from "./Stats";
 
 export default function ProviderDashboard() {
   const user = useUserStore((state) => state.user);
-  const [provider] = useState<Provider>(dummyProvider);
   const [slots, setSlots] = useState<Slot[]>(dummySlots);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingSlot, setEditingSlot] = useState<Slot | null>(null);
 
-  const [formData, setFormData] = useState<FormDataType>({
+  const [formData, setFormData] = useState({
     date: "",
-    startTime: "",
-    endTime: "",
+    startHour: "",
+    endHour: "",
   });
 
   const openCreateModal = () => {
     setEditingSlot(null);
-    setFormData({ date: "", startTime: "", endTime: "" });
+    setFormData({ date: "", startHour: "", endHour: "" });
     setIsModalOpen(true);
   };
 
@@ -47,9 +46,15 @@ export default function ProviderDashboard() {
     }
   };
 
-  const handleSubmit = (data: FormDataType) => {
-    const start = new Date(`${data.date}T${data.startTime}`).toISOString();
-    const end = new Date(`${data.date}T${data.endTime}`).toISOString();
+  const handleSubmit = (data: any) => {
+    const start = new Date(
+      `${data.date}T${String(data.startHour).padStart(2, "0")}:00:00Z`
+    ).toISOString();
+
+    const end = new Date(
+      `${data.date}T${String(data.endHour).padStart(2, "0")}:00:00Z`
+    ).toISOString();
+
     const duration = calculateDuration(start, end);
 
     if (duration <= 0) {
@@ -125,7 +130,6 @@ export default function ProviderDashboard() {
           formData={formData}
           setFormData={setFormData}
           slots={slots}
-          provider={provider}
         />
       )}
     </div>

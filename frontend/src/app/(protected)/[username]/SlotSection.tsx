@@ -1,4 +1,4 @@
-import { Plus, CalendarIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Slot } from "@/types/provider";
 
 interface SlotSectionProps {
@@ -16,23 +16,22 @@ export default function SlotSection({
 }: SlotSectionProps) {
   return (
     <section className="bg-card border border-border rounded-lg shadow-sm">
-      {/* Header */}
       <div className="p-6 border-b border-border flex items-center justify-between">
         <h2 className="text-xl font-semibold">My Availability Slots</h2>
-
         <button
           onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg"
         >
-          <Plus className="w-4 h-4 cursor-pointer" />
+          <Plus className="w-4 h-4" />
           Create Slot
         </button>
       </div>
 
-      {/* Content */}
       <div className="p-6">
         {slots.length === 0 ? (
-          <EmptyState />
+          <p className="text-muted-foreground text-center py-10">
+            No slots created yet.
+          </p>
         ) : (
           <ul className="space-y-4">
             {slots.map((slot) => (
@@ -45,11 +44,9 @@ export default function SlotSection({
                     {new Date(slot.startTime).toLocaleString()} →{" "}
                     {new Date(slot.endTime).toLocaleString()}
                   </p>
-
                   <p className="text-muted-foreground">
                     Duration: {slot.duration} minutes
                   </p>
-
                   <p
                     className={`text-sm ${
                       slot.status === "available"
@@ -82,16 +79,5 @@ export default function SlotSection({
         )}
       </div>
     </section>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="text-center py-12">
-      <CalendarIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-      <p className="text-muted-foreground">
-        No slots created yet. Create your first availability slot!
-      </p>
-    </div>
   );
 }
