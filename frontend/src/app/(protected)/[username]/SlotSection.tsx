@@ -1,19 +1,44 @@
+"use client";
+
 import { Plus } from "lucide-react";
 import { Slot } from "@/types/provider";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { handleGetProviderSlots } from "@/fetchers";
 
 interface SlotSectionProps {
-  slots: Slot[];
+  username: string;
   openCreateModal: () => void;
   openEditModal: (slot: Slot) => void;
-  deleteSlot: (id: number) => void;
 }
 
 export default function SlotSection({
-  slots,
+  username,
   openCreateModal,
   openEditModal,
-  deleteSlot,
 }: SlotSectionProps) {
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["slots", username],
+    queryFn: () => handleGetProviderSlots(username),
+    enabled: !!username,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => fetch(`/api/slots/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["slots", username] });
+    },
+  });
+
+  const deleteSlot = (id: number) => {
+    if (confirm("Are you sure you want to delete this slot?")) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  if (isLoading) return <section className="p-6">Loading slots...</section>;
+  const slots = data?.slots;
+
   return (
     <section className="bg-card border border-border rounded-lg shadow-sm">
       <div className="p-6 border-b border-border flex items-center justify-between">
@@ -28,13 +53,13 @@ export default function SlotSection({
       </div>
 
       <div className="p-6">
-        {slots.length === 0 ? (
+        {!slots || slots.length === 0 ? (
           <p className="text-muted-foreground text-center py-10">
             No slots created yet.
           </p>
         ) : (
           <ul className="space-y-4">
-            {slots.map((slot) => (
+            {slots.map((slot: Slot) => (
               <li
                 key={slot.id}
                 className="border border-border rounded-lg p-4 flex justify-between items-center"

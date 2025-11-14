@@ -7,10 +7,8 @@ import { useParams } from "next/navigation";
 
 import SlotModal from "./SlotModal";
 import SlotSection from "./SlotSection";
-import { calculateDuration, generateNewSlotId } from "./helpers";
 
-import { dummySlots } from "./data";
-import Stats from "./Stats";
+import StatsSection from "./StatsSection";
 import { handleGetProvider } from "@/fetchers";
 
 export default function ProviderDashboard() {
@@ -23,9 +21,7 @@ export default function ProviderDashboard() {
     enabled: !!username,
   });
 
-  const [slots, setSlots] = useState<Slot[]>(dummySlots);
-
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSlot, setEditingSlot] = useState<Slot | null>(null);
 
   const [formData, setFormData] = useState({
@@ -42,6 +38,11 @@ export default function ProviderDashboard() {
 
   const openEditModal = (slot: Slot) => {
     setEditingSlot(slot);
+    setFormData({
+      date: slot.startTime.split("T")[0],
+      startHour: new Date(slot.startTime).getHours().toString(),
+      endHour: new Date(slot.endTime).getHours().toString(),
+    });
     setIsModalOpen(true);
   };
 
@@ -50,53 +51,17 @@ export default function ProviderDashboard() {
     setIsModalOpen(false);
   };
 
-  const deleteSlot = (slotId: number) => {
-    if (confirm("Are you sure you want to delete this slot?")) {
-      setSlots(slots.filter((s) => s.id !== slotId));
-    }
-  };
-
   const handleSubmit = (data: any) => {
-    const start = new Date(
-      `${data.date}T${String(data.startHour).padStart(2, "0")}:00:00Z`
-    ).toISOString();
+    console.log("Submit new/edit slot → send to backend", data);
 
-    const end = new Date(
-      `${data.date}T${String(data.endHour).padStart(2, "0")}:00:00Z`
-    ).toISOString();
-
-    const duration = calculateDuration(start, end);
-
-    if (duration <= 0) {
-      alert("End time must be after start time");
-      return;
-    }
-
-    if (editingSlot) {
-      setSlots(
-        slots.map((s) =>
-          s.id === editingSlot.id
-            ? { ...s, startTime: start, endTime: end, duration }
-            : s
-        )
-      );
-    } else {
-      const newSlot: Slot = {
-        id: generateNewSlotId(slots),
-        startTime: start,
-        endTime: end,
-        duration,
-        status: "available",
-      };
-
-      setSlots([...slots, newSlot]);
-    }
+    // You will add mutation here once backend endpoint is ready
 
     closeModal();
   };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
   const provider = data?.provider;
 
   return (
@@ -121,13 +86,12 @@ export default function ProviderDashboard() {
           </div>
         </article>
 
-        <Stats />
+        <StatsSection />
 
         <SlotSection
-          slots={slots}
+          username={username}
           openCreateModal={openCreateModal}
           openEditModal={openEditModal}
-          deleteSlot={deleteSlot}
         />
       </div>
 
@@ -140,7 +104,6 @@ export default function ProviderDashboard() {
           onSubmit={handleSubmit}
           formData={formData}
           setFormData={setFormData}
-          slots={slots}
         />
       )}
     </div>

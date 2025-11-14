@@ -62,9 +62,9 @@ export const registerMiddlewares = (app) => {
   app.use(generalLimiter);
 
   app.use(
-    morgan("dev", {
+    morgan("combined", {
       stream: {
-        write: (message: any) => logger.info(message.trim()),
+        write: (message: string) => logger.info(message.trim()),
       },
     })
   );
