@@ -23,7 +23,7 @@ export default function ProtectedRoute({
         const isExpired = await authService.validateAccessToken();
         if (isExpired) {
           const body = await authService.callRefreshToken();
-          if (body) authService.setTokens(body.token, body.refreshToken);
+          if (body) authService.setTokens(body.accesToken, body.refreshToken);
         }
       } catch (err) {
         console.error("Error validating token:", err);

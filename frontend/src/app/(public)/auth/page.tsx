@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Calendar, DollarSign, Users } from "lucide-react";
 import { Button, Input, Label, Card, CardContent } from "@/components/ui";
-import { useAuthStore } from "@/store/authStore";
+import { useUserStore } from "@/store/userStore";
 import { handleSignup, handleLogin } from "@/fetchers";
 import authService from "@/services/authService";
 
 export default function AuthPage() {
   const router = useRouter();
-  const loginStore = useAuthStore((state) => state.login); // Zustand action
+  const setUser = useUserStore((state) => state.setUser);
 
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
@@ -52,9 +52,9 @@ export default function AuthPage() {
         });
       }
 
-      authService.setTokens(body.token, body.refreshToken);
+      authService.setTokens(body.accessToken, body.refreshToken);
 
-      loginStore(body.user);
+      setUser(body.user);
 
       router.push("/dashboard");
     } catch (err: any) {
