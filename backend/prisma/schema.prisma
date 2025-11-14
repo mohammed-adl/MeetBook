@@ -20,10 +20,24 @@ model User {
   updatedAt  DateTime @updatedAt
 
   RefreshTokens RefreshToken[]
+  slots         Slot[]
 
   @@index([role])
   @@index([hourlyRate, role])
   @@map("users")
+}
+
+model Slot {
+  id        String   @id @default(uuid())
+  startTime DateTime
+  endTime   DateTime
+  duration  Int
+  status    String
+
+  bookedBy String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model RefreshToken {
