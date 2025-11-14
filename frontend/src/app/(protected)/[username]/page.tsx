@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useUserStore } from "@/store/userStore";
 import { Slot } from "@/types/provider";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 import SlotModal from "./SlotModal";
 import SlotSection from "./SlotSection";
@@ -10,9 +11,18 @@ import { calculateDuration, generateNewSlotId } from "./helpers";
 
 import { dummySlots } from "./data";
 import Stats from "./Stats";
+import { handleGetProvider } from "@/fetchers";
 
 export default function ProviderDashboard() {
-  const user = useUserStore((state) => state.user);
+  const params = useParams();
+  const username = params.username as string;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["provider", username],
+    queryFn: () => handleGetProvider(username!),
+    enabled: !!username,
+  });
+
   const [slots, setSlots] = useState<Slot[]>(dummySlots);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -85,24 +95,25 @@ export default function ProviderDashboard() {
     closeModal();
   };
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  const provider = data?.provider;
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Provider Dashboard</h1>
-        <p className="text-muted-foreground mb-8">
-          Manage your availability and bookings
-        </p>
 
         <article className="bg-card border border-border rounded-lg p-6 mb-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold">{user?.name}</h2>
-              <p className="text-muted-foreground">{user?.email}</p>
+              <h2 className="text-xl font-semibold">{provider?.name}</h2>
+              <p className="text-muted-foreground">{provider?.email}</p>
             </div>
             <div className="text-right">
               <div className="flex items-center justify-end gap-2 text-primary mb-1">
                 <span className="text-2xl font-bold">
-                  ${Number(user?.hourlyRate)?.toFixed(2)}
+                  ${Number(provider?.hourlyRate)?.toFixed(2)}
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">Hourly Rate</p>

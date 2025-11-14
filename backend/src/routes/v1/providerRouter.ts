@@ -5,6 +5,6 @@ import { validateToken } from "@middlewares";
 
 import * as providerController from "@controllers/provider";
 
-router.get("/stats", validateToken, providerController.getProvider);
+router.get("/:username", validateToken, providerController.getProvider);
 
 export default router;
