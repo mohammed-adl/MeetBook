@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 interface CalendarProps {
-  slots?: any; // optional
+  slots?: any;
   selectedDate: string;
   onSelectDate: (date: string) => void;
 }
@@ -41,12 +41,11 @@ export default function Calendar({
 
   const selectDay = (d: number) => {
     const date = new Date(year, month, d);
-    onSelectDate(date.toISOString().slice(0, 10)); // YYYY-MM-DD
+    onSelectDate(date.toISOString().slice(0, 10));
   };
 
   return (
     <div className="w-full space-y-3">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <button
           onClick={() => setCurrent(new Date(year, month - 1, 1))}
@@ -70,7 +69,6 @@ export default function Calendar({
         </button>
       </div>
 
-      {/* Weekdays */}
       <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium text-gray-600">
         <div>Sun</div>
         <div>Mon</div>
@@ -81,7 +79,6 @@ export default function Calendar({
         <div>Sat</div>
       </div>
 
-      {/* Days */}
       <div className="grid grid-cols-7 gap-1">
         {weeks.map((d, i) =>
           d === null ? (

@@ -24,7 +24,6 @@ export default function SlotModal({
   slots,
   provider,
 }: any) {
-  // Sync form values when slot changes or modal opens
   useEffect(() => {
     if (slot) {
       const d = new Date(slot.startTime);
@@ -34,12 +33,10 @@ export default function SlotModal({
         endTime: new Date(slot.endTime).toTimeString().slice(0, 5),
       });
     } else {
-      // if modal just opened for create, ensure formData is reset
       if (!formData?.date) {
         setFormData({ date: "", startTime: "", endTime: "" });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slot, isOpen]);
 
   if (!isOpen) return null;
@@ -47,7 +44,6 @@ export default function SlotModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg shadow-xl max-w-3xl w-full">
-        {/* HEADER */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h3 className="text-xl font-semibold text-card-foreground">
             {mode === "edit" ? "Edit Slot" : "Create New Slot"}
@@ -57,9 +53,7 @@ export default function SlotModal({
           </button>
         </div>
 
-        {/* BODY */}
         <div className="p-6 space-y-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* LEFT: BIG Calendar (now here) */}
           <div>
             <Calendar
               slots={slots}
@@ -70,7 +64,6 @@ export default function SlotModal({
             />
           </div>
 
-          {/* RIGHT: time inputs */}
           <div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-card-foreground mb-2">

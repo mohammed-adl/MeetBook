@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar as CalendarIcon, Plus } from "lucide-react";
-
+import { useUserStore } from "@/store/userStore";
 import { Provider, Slot, FormDataType } from "@/types/provider";
 
 import SlotModal from "./SlotModal";
+import SlotSection from "./SlotSection";
 import {
   calculateDuration,
   calculateEarnings,
@@ -16,6 +16,7 @@ import { dummyProvider, dummySlots } from "./data";
 import Stats from "./Stats";
 
 export default function ProviderDashboard() {
+  const user = useUserStore((state) => state.user);
   const [provider] = useState<Provider>(dummyProvider);
   const [slots, setSlots] = useState<Slot[]>(dummySlots);
 
@@ -105,75 +106,46 @@ export default function ProviderDashboard() {
           Manage your availability and bookings
         </p>
 
-        {/* Provider Info */}
-        <div className="bg-card border border-border rounded-lg p-6 mb-6 shadow-sm">
+        <article className="bg-card border border-border rounded-lg p-6 mb-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold">{provider.name}</h2>
-              <p className="text-muted-foreground">{provider.email}</p>
+              <h2 className="text-xl font-semibold">{user?.name}</h2>
+              <p className="text-muted-foreground">{user?.email}</p>
             </div>
             <div className="text-right">
               <div className="flex items-center justify-end gap-2 text-primary mb-1">
                 <span className="text-2xl font-bold">
-                  ${provider.hourlyRate.toFixed(2)}
+                  ${Number(user?.hourlyRate)?.toFixed(2)}
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">Hourly Rate</p>
             </div>
           </div>
-        </div>
+        </article>
 
-        {/* Stats Component */}
         <Stats stats={stats} />
 
-        {/* Slots Section */}
-        <div className="bg-card border border-border rounded-lg shadow-sm">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-xl font-semibold">My Availability Slots</h2>
-
-            <button
-              onClick={openCreateModal}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg"
-            >
-              <Plus className="w-4 h-4" />
-              Create Slot
-            </button>
-          </div>
-
-          <div className="p-6">
-            {slots.length === 0 ? (
-              <EmptyState />
-            ) : (
-              <div className="text-muted">
-                Calendar is available inside the slot creation modal.
-              </div>
-            )}
-          </div>
-        </div>
+        <SlotSection
+          slots={slots}
+          openCreateModal={openCreateModal}
+          openEditModal={openEditModal}
+          deleteSlot={deleteSlot}
+        />
       </div>
 
-      <SlotModal
-        isOpen={isModalOpen}
-        mode={editingSlot ? "edit" : "create"}
-        slot={editingSlot}
-        onClose={closeModal}
-        onSubmit={handleSubmit}
-        formData={formData}
-        setFormData={setFormData}
-        slots={slots}
-        provider={provider}
-      />
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="text-center py-12">
-      <CalendarIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-      <p className="text-muted-foreground">
-        No slots created yet. Create your first availability slot!
-      </p>
+      {isModalOpen && (
+        <SlotModal
+          isOpen={true}
+          mode={editingSlot ? "edit" : "create"}
+          slot={editingSlot}
+          onClose={closeModal}
+          onSubmit={handleSubmit}
+          formData={formData}
+          setFormData={setFormData}
+          slots={slots}
+          provider={provider}
+        />
+      )}
     </div>
   );
 }

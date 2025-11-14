@@ -42,7 +42,7 @@ function StatCard({
   value: string | number;
 }) {
   return (
-    <div className="bg-card border border-border rounded-lg p-5 shadow-sm">
+    <section className="bg-card border border-border rounded-lg p-5 shadow-sm">
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
           {icon}
@@ -52,6 +52,6 @@ function StatCard({
           <p className="text-sm text-muted-foreground">{label}</p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
