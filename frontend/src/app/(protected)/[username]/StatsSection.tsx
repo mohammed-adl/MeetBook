@@ -27,18 +27,12 @@ export default function Stats() {
     totalSlots: slots?.totalSlots,
     availableSlots: slots?.availableSlots,
     bookedSlots: slots?.bookedSlots,
-    Earnings: 0,
   };
 
   const statItems: StatItem[] = [
     { icon: <CalendarIcon />, label: "Total Slots", value: stats.totalSlots },
     { icon: <Clock />, label: "Available", value: stats.availableSlots },
     { icon: <CalendarIcon />, label: "Booked", value: stats.bookedSlots },
-    {
-      icon: <DollarSign />,
-      label: "Earnings",
-      value: `$${stats.Earnings}`,
-    },
   ];
 
   return (
