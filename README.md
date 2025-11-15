@@ -13,6 +13,8 @@
 
 ---
 
+**Live Demo:** [https://meet-book-project.vercel.app](https://meet-book-project.vercel.app)
+
 ## 🧩 Overview
 
 **MeetBook** is a minimal yet complete booking platform that demonstrates modern full-stack development practices. It handles user authentication, role-based access control, dynamic pricing calculations, and transaction persistence — all with a clean, responsive interface.
