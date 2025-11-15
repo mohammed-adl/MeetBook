@@ -18,7 +18,7 @@ interface CreateUserData {
   name: string;
   username: string;
   role: any;
-  hourlyRate: number;
+  hourlyRate: number | null;
 }
 
 interface JWTPayload {
@@ -31,14 +31,25 @@ const authService = {
   // User CREATION
   // ==============================================
   async createUser(data: CreateUserData) {
-    const userExists = await prisma.user.findUnique({
-      where: { email: data.email },
-      select: { id: true },
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: data.email }, { username: data.username }],
+      },
+      select: {
+        email: true,
+        username: true,
+      },
     });
 
-    if (userExists) {
-      throw new AppError("User already exists", 400);
+    if (existingUser) {
+      if (existingUser.email === data.email) {
+        throw new AppError("Email already registered", 400);
+      }
+      if (existingUser.username === data.username) {
+        throw new AppError("Username already taken", 400);
+      }
     }
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const user = await prisma.$transaction(async (prismaTx) => {
@@ -49,7 +60,7 @@ const authService = {
           username: data.username,
           password: hashedPassword,
           role: data.role,
-          hourlyRate: data.hourlyRate,
+          hourlyRate: data.role === "PROVIDER" ? data.hourlyRate : null,
         },
         select: userSelect,
       });

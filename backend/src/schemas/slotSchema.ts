@@ -19,6 +19,7 @@ export const createSlotSchema = z
     message: "End time must be after start time",
     path: ["endTime"],
   });
+
 export const usernameParamSchema = z.object({
   username: z.string().min(1, "Username is required"),
 });
