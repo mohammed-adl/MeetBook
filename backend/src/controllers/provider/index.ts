@@ -1,2 +1,2 @@
-export * from "./getProvider";
-export * from "../slot/getProviderSlots";
+export * from "./getProvider.js";
+export * from "../slot/getProviderSlots.js";

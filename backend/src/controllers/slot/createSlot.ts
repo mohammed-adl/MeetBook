@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { prisma, success, fail } from "../../lib";
+import { prisma, success, fail } from "../../lib/index.js";
 
 export const createSlot = asyncHandler(async (req: any, res: any) => {
   const providerId = req.user.id;

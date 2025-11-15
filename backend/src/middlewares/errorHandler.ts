@@ -1,5 +1,5 @@
-import { AppError } from "@utils";
-import { logger } from "@lib";
+import { AppError } from "../utils/index.js";
+import { logger } from "../lib/index.js";
 
 export const errorHandler = (err: any, req: any, res: any, next: any) => {
   logger.error({

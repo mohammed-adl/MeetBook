@@ -1,9 +1,9 @@
 import express from "express";
 const router = express.Router();
 
-import { validateToken, validateReq } from "@middlewares";
-import { createSlotSchema, usernameParamSchema } from "@schemas";
-import * as slotController from "@controllers/slot";
+import { validateToken, validateReq } from "../../middlewares/index.js";
+import { createSlotSchema, usernameParamSchema } from "../../schemas/index.js";
+import * as slotController from "../../controllers/slot/index.js";
 
 router.use(validateToken);
 

@@ -1,8 +1,12 @@
 import express from "express";
 const app = express();
 
-import { setupRoutes } from "./src/routes/v1/index.js";
-import { registerMiddlewares, errorHandler, notFound } from "@middlewares";
+import { setupRoutes } from "./routes/v1/index.js";
+import {
+  registerMiddlewares,
+  errorHandler,
+  notFound,
+} from "./middlewares/index.js";
 
 registerMiddlewares(app);
 

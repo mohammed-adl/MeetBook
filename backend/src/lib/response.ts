@@ -1,4 +1,4 @@
-import { AppError } from "@utils";
+import { AppError } from "../utils/index.js";
 
 export const success = (res: any, data: any, status = 200) => {
   return res.status(status).json(data);

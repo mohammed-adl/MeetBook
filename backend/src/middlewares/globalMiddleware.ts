@@ -4,9 +4,9 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import { logger } from "@lib";
+import { logger } from "../lib/index.js";
 
-import { RATE_LIMIT, AUTH_RATE_LIMIT } from "@config/constants.js";
+import { RATE_LIMIT, AUTH_RATE_LIMIT } from "../config/constants.js";
 
 const generalLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,

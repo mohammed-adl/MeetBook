@@ -1,3 +1,3 @@
-export * from "./getSlotsStats";
-export * from "./createSlot";
-export * from "./getProviderSlots";
+export * from "./getSlotsStats.js";
+export * from "./createSlot.js";
+export * from "./getProviderSlots.js";

@@ -1,10 +1,10 @@
 import express from "express";
 const router = express.Router();
 
-import { authLimiter, validateReq } from "@middlewares";
-import { registerSchema, loginSchema } from "@schemas";
+import { authLimiter, validateReq } from "../../middlewares/index.js";
+import { registerSchema, loginSchema } from "../../schemas/index.js";
 
-import * as authController from "@controllers/auth";
+import * as authController from "../../controllers/auth/index.js";
 
 router.post("/refresh-token", authController.refreshToken);
 

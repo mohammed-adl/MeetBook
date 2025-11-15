@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 
-import { prisma, success, fail, userSelect } from "../../lib";
+import { prisma, success, fail, userSelect } from "../../lib/index.js";
 
 export const createBooking = asyncHandler(async (req: any, res: any) => {
   const clientId = req.user.id;

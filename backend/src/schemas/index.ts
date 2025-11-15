@@ -1,3 +1,3 @@
-export * from "./authSchema";
-export * from "./bookingSchema";
-export * from "./slotSchema";
+export * from "./authSchema.js";
+export * from "./bookingSchema.js";
+export * from "./slotSchema.js";

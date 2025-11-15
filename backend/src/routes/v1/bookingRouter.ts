@@ -1,10 +1,10 @@
 import express from "express";
 const router = express.Router();
 
-import { validateToken, validateReq } from "@middlewares";
-import { createBookingSchema } from "@schemas";
+import { validateToken, validateReq } from "../../middlewares/index.js";
+import { createBookingSchema } from "../../schemas/index.js";
 
-import * as bookingController from "@controllers/booking";
+import * as bookingController from "../../controllers/booking/index.js";
 
 router.post(
   "/",

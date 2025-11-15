@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { prisma, success, fail, userSelect } from "../../lib";
+import { prisma, success, fail, userSelect } from "../../lib/index.js";
 
 export const getProviderSlots = asyncHandler(async (req: any, res: any) => {
   const username = req.params.username;
