@@ -1,3 +1,2 @@
-export * from "./signup";
-export * from "./login";
 export * from "./refreshToken";
+export * from "./auth";

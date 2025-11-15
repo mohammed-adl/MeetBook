@@ -19,8 +19,10 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  RefreshTokens RefreshToken[]
-  slots         Slot[]
+  RefreshTokens    RefreshToken[]
+  slots            Slot[]
+  clientBookings   Booking[]      @relation("ClientBookings")
+  providerBookings Booking[]      @relation("ProviderBookings")
 
   @@index([role])
   @@index([hourlyRate, role])
@@ -34,10 +36,24 @@ model Slot {
   duration  Int
   status    SLOT_STATUS @default(AVAILABLE)
 
-  bookedBy String?
+  userId  String
+  user    User     @relation(fields: [userId], references: [id])
+  booking Booking?
+}
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+model Booking {
+  id         String   @id @default(uuid())
+  slotId     String   @unique
+  clientId   String
+  providerId String
+  totalCost  Float
+  createdAt  DateTime @default(now())
+
+  slot     Slot @relation(fields: [slotId], references: [id])
+  client   User @relation("ClientBookings", fields: [clientId], references: [id])
+  provider User @relation("ProviderBookings", fields: [providerId], references: [id])
+
+  @@map("bookings")
 }
 
 model RefreshToken {

@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { prisma, success, fail } from "../../lib";
+import { prisma, success, fail, userSelect } from "../../lib";
 
 export const getProviderSlots = asyncHandler(async (req: any, res: any) => {
   const username = req.params.username;
@@ -17,4 +17,20 @@ export const getProviderSlots = asyncHandler(async (req: any, res: any) => {
   });
 
   return success(res, { provider, slots });
+});
+
+export const getAllAvailableSlots = asyncHandler(async (req, res) => {
+  const slots = await prisma.slot.findMany({
+    where: {
+      status: "AVAILABLE",
+    },
+    include: {
+      user: {
+        select: userSelect,
+      },
+    },
+    orderBy: { startTime: "asc" },
+  });
+
+  return success(res, { slots });
 });
