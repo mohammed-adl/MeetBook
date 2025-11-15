@@ -28,6 +28,7 @@ export default function SlotSection({
     <section className="bg-card border border-border rounded-lg shadow-sm">
       <div className="p-6 border-b border-border flex items-center justify-between">
         <h2 className="text-xl font-semibold">My Availability Slots</h2>
+
         <button
           onClick={openCreateModal}
           className="flex items-center cursor-pointer gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg"

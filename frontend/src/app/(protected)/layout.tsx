@@ -25,6 +25,10 @@ export default function ProtectedRoute({
           const body = await authService.callRefreshToken();
           if (body) authService.setTokens(body.accesToken, body.refreshToken);
         }
+
+        if (user && user.role === "PROVIDER" && user.username !== username) {
+          router.push(`/${user.username}`);
+        }
       } catch (err) {
         console.error("Error validating token:", err);
         authService.logout();
