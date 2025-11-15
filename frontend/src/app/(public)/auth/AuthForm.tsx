@@ -141,7 +141,7 @@ export default function AuthForm({
                     onChange={onChange}
                     min="1"
                     step="0.01"
-                    className="pl-10 pt-4"
+                    className="pl-10 pt-4 placeholder:-translate-y-1"
                     placeholder="50.00"
                     required
                   />

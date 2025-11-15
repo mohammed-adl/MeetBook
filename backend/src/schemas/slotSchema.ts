@@ -19,10 +19,9 @@ export const createSlotSchema = z
     message: "End time must be after start time",
     path: ["endTime"],
   });
-
-export const updateSlotStatusSchema = z.object({
-  status: z.enum(["AVAILABLE", "BOOKED"]),
+export const usernameParamSchema = z.object({
+  username: z.string().min(1, "Username is required"),
 });
 
 export type CreateSlotInput = z.infer<typeof createSlotSchema>;
-export type UpdateSlotStatusInput = z.infer<typeof updateSlotStatusSchema>;
+export type UsernameParam = z.infer<typeof usernameParamSchema>;

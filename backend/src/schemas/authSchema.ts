@@ -8,7 +8,7 @@ export const registerSchema = z.object({
   role: z.enum(["CLIENT", "PROVIDER"], {
     message: "Role must be either CLIENT or PROVIDER",
   }),
-  hourlyRate: z
+  hourlyRate: z.coerce
     .number()
     .int()
     .positive("Hourly rate must be a positive integer"),

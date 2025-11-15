@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { validateToken } from "@middlewares";
+import { validateToken, validateReq } from "@middlewares";
 
 import * as providerController from "@controllers/provider";
 

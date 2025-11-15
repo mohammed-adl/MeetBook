@@ -3,7 +3,7 @@ import asyncHandler from "express-async-handler";
 import authService from "@services/authService";
 import { success, fail } from "@lib";
 
-export const logIn = asyncHandler(async (req: any, res: any) => {
+export const login = asyncHandler(async (req: any, res: any) => {
   const { email, password } = req.body;
 
   const user = await authService.logIn(email, password);
