@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 
-import { authService } from "../../services/index.js";
-import { success, fail } from "../../lib/index.js";
+import authService from "@services/authService";
+import { success, fail } from "@lib";
 
 export const logIn = asyncHandler(async (req: any, res: any) => {
   const { email, password } = req.body;
