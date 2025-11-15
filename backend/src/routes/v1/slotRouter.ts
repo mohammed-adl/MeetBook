@@ -2,13 +2,13 @@ import express from "express";
 const router = express.Router();
 
 import { validateToken } from "@middlewares";
-
 import * as slotController from "@controllers/slot";
 
-router.get("/stats", validateToken, slotController.getProviderSlotsStats);
+router.use(validateToken);
 
-router.post("/", validateToken, slotController.createSlot);
-
-router.get("/:username", validateToken, slotController.getProviderSlots);
+router.get("/stats", slotController.getProviderSlotsStats);
+router.get("/all/available", slotController.getAllAvailableSlots);
+router.post("/", slotController.createSlot);
+router.get("/:username", slotController.getProviderSlots);
 
 export default router;
