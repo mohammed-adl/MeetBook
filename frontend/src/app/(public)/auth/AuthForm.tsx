@@ -76,6 +76,7 @@ export default function AuthForm({
                   required
                 />
               </div>
+
               <div>
                 <Label htmlFor="name" className="mb-1 block">
                   Full Name
@@ -90,6 +91,7 @@ export default function AuthForm({
                   required
                 />
               </div>
+
               <div>
                 <Label>Account Type</Label>
                 <div className="grid grid-cols-2 gap-3 mt-2">
@@ -126,27 +128,29 @@ export default function AuthForm({
                   </button>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="hourlyRate" className="mb-1 block">
-                  Hourly Rate (USD)
-                </Label>
 
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="hourlyRate"
-                    type="number"
-                    name="hourlyRate"
-                    value={formData.hourlyRate}
-                    onChange={onChange}
-                    min="1"
-                    step="0.01"
-                    className="pl-10 pt-4 placeholder:-translate-y-1"
-                    placeholder="50.00"
-                    required
-                  />
+              {formData.role === "PROVIDER" && (
+                <div>
+                  <Label htmlFor="hourlyRate" className="mb-1 block">
+                    Hourly Rate (USD)
+                  </Label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="hourlyRate"
+                      type="number"
+                      name="hourlyRate"
+                      value={formData.hourlyRate}
+                      onChange={onChange}
+                      min="1"
+                      step="0.01"
+                      className="pl-10 pt-4 placeholder:-translate-y-1"
+                      placeholder="50.00"
+                      required={formData.role === "PROVIDER"}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           )}
 
