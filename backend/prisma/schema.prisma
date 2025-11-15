@@ -32,7 +32,7 @@ model Slot {
   startTime DateTime
   endTime   DateTime
   duration  Int
-  status    SLOT_STATUS
+  status    SLOT_STATUS @default(AVAILABLE)
 
   bookedBy String?
 
