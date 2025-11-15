@@ -38,7 +38,7 @@ export const createBooking = asyncHandler(async (req: any, res: any) => {
       throw new Error("You cannot book your own slot");
     }
 
-    const totalCost = (slot.user.hourlyRate * slot.duration) / 60;
+    const totalCost = (slot.user.hourlyRate! * slot.duration) / 60;
 
     const newBooking = await tx.booking.create({
       data: {
