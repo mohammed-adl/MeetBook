@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { handleGetAllAvailableSlots } from "@/fetchers";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { handleGetAllAvailableSlots, handleCreateBooking } from "@/fetchers";
 
 export default function ClientDashboard() {
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["availableSlots"],
@@ -15,13 +16,19 @@ export default function ClientDashboard() {
     refetchOnWindowFocus: true,
   });
 
-  // Debug logging
-  console.log("API Response:", data);
-  console.log("Slots:", data?.data?.slots);
-  console.log("Is Loading:", isLoading);
-  console.log("Error:", error);
-
   const slots = data?.slots || [];
+
+  const { mutate: bookSlot, isPending: isBooking } = useMutation({
+    mutationFn: (slotId: string) => handleCreateBooking({ slotId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["availableSlots"] });
+      closeModal();
+      alert("Booking successful!");
+    },
+    onError: (error: any) => {
+      alert(error?.message || "Failed to book slot");
+    },
+  });
 
   const calculateCost = (slot: any) => {
     if (!slot.user?.hourlyRate || !slot.duration) return 0;
@@ -36,6 +43,12 @@ export default function ClientDashboard() {
   const closeModal = () => {
     setSelectedSlot(null);
     setIsModalOpen(false);
+  };
+
+  const handleBooking = () => {
+    if (selectedSlot) {
+      bookSlot(selectedSlot.id);
+    }
   };
 
   return (
@@ -57,7 +70,7 @@ export default function ClientDashboard() {
               className="bg-card border border-border rounded-lg p-4 shadow-sm"
             >
               <h3 className="font-semibold text-lg">
-                {slot.user?.fullName || slot.user?.username}
+                {slot.user?.name || slot.user?.username}
               </h3>
 
               <p className="text-sm text-muted-foreground mb-1">
@@ -94,7 +107,7 @@ export default function ClientDashboard() {
 
             <p className="mb-2">
               <strong>Provider:</strong>{" "}
-              {selectedSlot.user?.fullName || selectedSlot.user?.username}
+              {selectedSlot.user?.name || selectedSlot.user?.username}
             </p>
 
             <p className="text-sm text-muted-foreground mb-2">
@@ -128,16 +141,17 @@ export default function ClientDashboard() {
               <button
                 className="px-4 py-2 rounded-lg border hover:bg-muted transition"
                 onClick={closeModal}
+                disabled={isBooking}
               >
                 Cancel
               </button>
 
-              {/* Booking backend not implemented yet */}
               <button
-                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground opacity-50 cursor-not-allowed"
-                disabled
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleBooking}
+                disabled={isBooking}
               >
-                Confirm (disabled)
+                {isBooking ? "Booking..." : "Confirm"}
               </button>
             </div>
           </div>
