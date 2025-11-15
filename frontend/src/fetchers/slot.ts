@@ -14,3 +14,7 @@ export async function handleCreateSlot(data: any) {
     body: data,
   });
 }
+
+export async function handleGetAllAvailableSlots() {
+  return await reqApi("/slots/all/available");
+}

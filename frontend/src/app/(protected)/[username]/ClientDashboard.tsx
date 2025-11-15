@@ -1,55 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { handleGetAllAvailableSlots } from "@/fetchers";
 
 export default function ClientDashboard() {
-  const params = useParams();
-  const username = params.username as string;
-
-  // Modal state
   const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // --------------------------
-  // Backend temporarily removed
-  // --------------------------
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["availableSlots"],
+    queryFn: () => handleGetAllAvailableSlots(),
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
 
-  // const { data, isLoading, error } = useQuery({
-  //   queryKey: ["availableSlots", username],
-  //   queryFn: () => handleGetAvailableSlots(username),
-  //   enabled: !!username,
-  // });
+  // Debug logging
+  console.log("API Response:", data);
+  console.log("Slots:", data?.data?.slots);
+  console.log("Is Loading:", isLoading);
+  console.log("Error:", error);
 
-  // const { mutate: bookSlot, isPending: booking } = useMutation({
-  //   mutationFn: (slotId: string) => handleBookSlot(slotId),
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["availableSlots", username] });
-  //     closeModal();
-  //   },
-  // });
+  const slots = data?.slots || [];
 
-  // TEMP MOCK DATA (ONLY UNTIL BACKEND IS CONNECTED)
-  const slots = [
-    {
-      id: "1",
-      provider: { name: "John Provider" },
-      startTime: new Date().toISOString(),
-      endTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-      cost: 50,
-    },
-    {
-      id: "2",
-      provider: { name: "Sarah Provider" },
-      startTime: new Date().toISOString(),
-      endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-      cost: 80,
-    },
-  ];
-
-  // --------------------------
-  // Modal functions
-  // --------------------------
+  const calculateCost = (slot: any) => {
+    if (!slot.user?.hourlyRate || !slot.duration) return 0;
+    return ((slot.user.hourlyRate * slot.duration) / 60).toFixed(2);
+  };
 
   const openModal = (slot: any) => {
     setSelectedSlot(slot);
@@ -66,8 +43,11 @@ export default function ClientDashboard() {
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Client Dashboard</h1>
 
+        {isLoading && <p>Loading...</p>}
+        {error && <p className="text-red-500">Failed to load slots.</p>}
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {slots.length === 0 && (
+          {!isLoading && slots.length === 0 && (
             <div className="text-muted-foreground">No available slots.</div>
           )}
 
@@ -76,7 +56,9 @@ export default function ClientDashboard() {
               key={slot.id}
               className="bg-card border border-border rounded-lg p-4 shadow-sm"
             >
-              <h3 className="font-semibold text-lg">{slot.provider.name}</h3>
+              <h3 className="font-semibold text-lg">
+                {slot.user?.fullName || slot.user?.username}
+              </h3>
 
               <p className="text-sm text-muted-foreground mb-1">
                 {new Date(slot.startTime).toLocaleString()}
@@ -85,13 +67,18 @@ export default function ClientDashboard() {
                 {new Date(slot.endTime).toLocaleString()}
               </p>
 
+              <p className="text-sm text-muted-foreground mb-2">
+                Duration: {slot.duration} minutes
+              </p>
+
               <p className="font-medium mb-4">
-                Cost: <span className="text-primary">${slot.cost}</span>
+                Cost:{" "}
+                <span className="text-primary">${calculateCost(slot)}</span>
               </p>
 
               <button
                 onClick={() => openModal(slot)}
-                className="w-full bg-primary text-primary-foreground py-2 rounded-lg"
+                className="w-full bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition"
               >
                 Book Slot
               </button>
@@ -101,33 +88,51 @@ export default function ClientDashboard() {
       </div>
 
       {isModalOpen && selectedSlot && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-card p-6 rounded-lg shadow-lg w-[420px]">
             <h2 className="text-xl font-bold mb-4">Confirm Booking</h2>
 
             <p className="mb-2">
-              <strong>Provider:</strong> {selectedSlot.provider.name}
+              <strong>Provider:</strong>{" "}
+              {selectedSlot.user?.fullName || selectedSlot.user?.username}
             </p>
 
-            <p className="text-sm text-muted-foreground">
-              {new Date(selectedSlot.startTime).toLocaleString()} —{" "}
+            <p className="text-sm text-muted-foreground mb-2">
+              <strong>Start:</strong>{" "}
+              {new Date(selectedSlot.startTime).toLocaleString()}
+            </p>
+
+            <p className="text-sm text-muted-foreground mb-2">
+              <strong>End:</strong>{" "}
               {new Date(selectedSlot.endTime).toLocaleString()}
             </p>
 
-            <div className="mt-4">
-              <strong>Total Cost:</strong>{" "}
-              <span className="text-primary">${selectedSlot.cost}</span>
+            <p className="text-sm text-muted-foreground mb-4">
+              <strong>Duration:</strong> {selectedSlot.duration} minutes
+            </p>
+
+            <div className="mt-4 p-4 bg-muted rounded-lg">
+              <p className="text-lg">
+                <strong>Total Cost:</strong>{" "}
+                <span className="text-primary text-xl font-bold">
+                  ${calculateCost(selectedSlot)}
+                </span>
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                (${selectedSlot.user?.hourlyRate}/hour × {selectedSlot.duration}{" "}
+                min)
+              </p>
             </div>
 
             <div className="flex justify-end gap-2 mt-6">
               <button
-                className="px-4 py-2 rounded-lg border"
+                className="px-4 py-2 rounded-lg border hover:bg-muted transition"
                 onClick={closeModal}
               >
                 Cancel
               </button>
 
-              {/* Button disabled for now (backend commented) */}
+              {/* Booking backend not implemented yet */}
               <button
                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground opacity-50 cursor-not-allowed"
                 disabled

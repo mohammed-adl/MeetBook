@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 
 import SlotModal from "./SlotModal";
 import SlotSection from "./SlotSection";
@@ -22,16 +21,15 @@ export default function ProviderDashboard() {
     enabled: !!username,
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const provider = data?.provider;
+  const hourlyRate = provider?.hourlyRate ?? 0;
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
     date: "",
     startHour: "",
     endHour: "",
   });
-
-  const provider = data?.provider;
-  const hourlyRate = provider?.hourlyRate ?? 0;
 
   const startHourNum = form.startHour ? Number(form.startHour) : null;
   const endHourNum = form.endHour ? Number(form.endHour) : null;
@@ -45,13 +43,24 @@ export default function ProviderDashboard() {
 
   const openCreateModal = () => {
     setForm({ date: "", startHour: "", endHour: "" });
-
     setIsModalOpen(true);
   };
 
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSubmit = async () => {
+  const { mutate: createSlot, isPending: creating } = useMutation({
+    mutationFn: (payload: any) => handleCreateSlot(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["slots", username] });
+      queryClient.invalidateQueries({
+        queryKey: ["slotsStats", provider.id],
+      });
+      closeModal();
+    },
+    onError: () => {},
+  });
+
+  const handleSubmit = () => {
     const { date, startHour, endHour } = form;
 
     const start = new Date(
@@ -78,18 +87,11 @@ export default function ProviderDashboard() {
       cost,
     };
 
-    try {
-      await handleCreateSlot(payload);
-      queryClient.invalidateQueries({ queryKey: ["slots", username] });
-      queryClient.invalidateQueries({ queryKey: ["slotsStats", provider.id] });
-      closeModal();
-    } catch (err) {
-      console.log("Error creating slot", err);
-    }
+    createSlot(payload);
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (error) return <div>Error</div>;
 
   return (
     <div className="min-h-screen bg-background p-6">
