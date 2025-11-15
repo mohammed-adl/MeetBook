@@ -1,7 +1,8 @@
-import { Calendar as CalendarIcon, Clock, DollarSign } from "lucide-react";
+import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { handleGetSlotsStats } from "@/fetchers";
 import { useQuery } from "@tanstack/react-query";
 import { useUserStore } from "@/store/userStore";
+import { Loader2 } from "lucide-react";
 
 interface StatItem {
   icon: React.ReactNode;
@@ -19,8 +20,6 @@ export default function Stats() {
     enabled: !!userId,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
   const slots = data?.slots;
 
   const stats = {
@@ -37,9 +36,18 @@ export default function Stats() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {statItems.map((item, idx) => (
-        <StatCard key={idx} {...item} />
-      ))}
+      {isLoading && (
+        <div className="flex items-center gap-2 text-primary">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          Loading
+        </div>
+      )}
+
+      {error && <div className="text-red-500">Error: {error.message}</div>}
+
+      {!isLoading &&
+        !error &&
+        statItems.map((item, idx) => <StatCard key={idx} {...item} />)}
     </div>
   );
 }
@@ -61,7 +69,6 @@ function StatCard({
         </div>
         <div>
           <p className="text-sm text-muted-foreground">{label}</p>
-
           <p className="text-2xl font-bold">{value}</p>
         </div>
       </div>

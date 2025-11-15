@@ -16,7 +16,6 @@ export function UserInitializer({ children }: UserInitializerProps) {
   }, [initialize]);
 
   if (loading) return <LoadingScreen />;
-  if (loading) return <div>Loading...</div>;
 
   return <>{children}</>;
 }

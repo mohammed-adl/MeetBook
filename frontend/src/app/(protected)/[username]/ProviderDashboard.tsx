@@ -9,6 +9,7 @@ import SlotSection from "./SlotSection";
 import StatsSection from "./StatsSection";
 
 import { handleGetProvider, handleCreateSlot } from "@/fetchers";
+import { Loader2 } from "lucide-react";
 
 export default function ProviderDashboard() {
   const params = useParams();
@@ -52,9 +53,7 @@ export default function ProviderDashboard() {
     mutationFn: (payload: any) => handleCreateSlot(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["slots", username] });
-      queryClient.invalidateQueries({
-        queryKey: ["slotsStats", provider.id],
-      });
+      queryClient.invalidateQueries({ queryKey: ["slotsStats", provider.id] });
       closeModal();
     },
     onError: () => {},
@@ -90,34 +89,47 @@ export default function ProviderDashboard() {
     createSlot(payload);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error</div>;
-
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Provider Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+          Provider Dashboard
+          {isLoading && (
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          )}
+        </h1>
 
-        <article className="bg-card border border-border rounded-lg p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">{provider?.name}</h2>
-              <p className="text-muted-foreground">{provider?.email}</p>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center justify-end gap-2 text-primary mb-1">
-                <span className="text-2xl font-bold">
-                  ${Number(provider?.hourlyRate)?.toFixed(2)}
-                </span>
+        {error && (
+          <div className="text-red-500 mb-4">Error loading provider</div>
+        )}
+
+        {!isLoading && provider && (
+          <>
+            <article className="bg-card border border-border rounded-lg p-6 mb-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold">{provider?.name}</h2>
+                  <p className="text-muted-foreground">{provider?.email}</p>
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center justify-end gap-2 text-primary mb-1">
+                    <span className="text-2xl font-bold">
+                      ${Number(provider?.hourlyRate)?.toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Hourly Rate</p>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">Hourly Rate</p>
-            </div>
-          </div>
-        </article>
+            </article>
 
-        <StatsSection />
+            <StatsSection />
 
-        <SlotSection username={username} openCreateModal={openCreateModal} />
+            <SlotSection
+              username={username}
+              openCreateModal={openCreateModal}
+            />
+          </>
+        )}
       </div>
 
       {isModalOpen && (
