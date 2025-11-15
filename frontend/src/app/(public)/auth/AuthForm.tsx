@@ -1,16 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Calendar, DollarSign, Users } from "lucide-react";
 import { Button, Input, Label, Card, CardContent } from "@/components/ui";
+import { validate } from "@/schemas/validate";
+import { loginSchema, registerSchema } from "@/schemas/authSchema";
 
 export default function AuthForm({
-  formData,
   isLogin,
   serverError,
   isSubmitting,
-  onChange,
   onSubmit,
   onToggleLogin,
+  formData,
+  onChange,
   onRoleChange,
 }: {
   formData: any;
@@ -18,10 +21,22 @@ export default function AuthForm({
   serverError: string | null;
   isSubmitting: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: () => void;
+  onSubmit: (valid: boolean) => void;
   onToggleLogin: () => void;
   onRoleChange: (role: "CLIENT" | "PROVIDER") => void;
 }) {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleSubmit = () => {
+    const schema = isLogin ? loginSchema : registerSchema;
+    const result = validate(schema, formData);
+    setErrors(result.errors);
+
+    if (!result.valid) return;
+
+    onSubmit(true);
+  };
+
   return (
     <Card className="bg-card text-card-foreground">
       <CardContent className="pt-6">
@@ -43,6 +58,9 @@ export default function AuthForm({
               placeholder="you@example.com"
               required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -58,6 +76,9 @@ export default function AuthForm({
               placeholder="••••••••"
               required
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
           </div>
 
           {!isLogin && (
@@ -75,6 +96,9 @@ export default function AuthForm({
                   placeholder="yourusername"
                   required
                 />
+                {errors.username && (
+                  <p className="text-red-500 text-sm">{errors.username}</p>
+                )}
               </div>
 
               <div>
@@ -90,6 +114,9 @@ export default function AuthForm({
                   placeholder="John Doe"
                   required
                 />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name}</p>
+                )}
               </div>
 
               <div>
@@ -143,19 +170,21 @@ export default function AuthForm({
                       value={formData.hourlyRate}
                       onChange={onChange}
                       min="1"
-                      step="0.01"
                       className="pl-10 pt-4 placeholder:-translate-y-1"
-                      placeholder="50.00"
+                      placeholder="50"
                       required={formData.role === "PROVIDER"}
                     />
                   </div>
+                  {errors.hourlyRate && (
+                    <p className="text-red-500 text-sm">{errors.hourlyRate}</p>
+                  )}
                 </div>
               )}
             </>
           )}
 
           <Button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             className="w-full cursor-pointer"
             disabled={isSubmitting}
           >

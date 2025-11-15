@@ -60,7 +60,7 @@ const authService = {
           username: data.username,
           password: hashedPassword,
           role: data.role,
-          hourlyRate: data.role === "PROVIDER" ? data.hourlyRate : null,
+          hourlyRate: data.role === "PROVIDER" ? Number(data.hourlyRate) : null,
         },
         select: userSelect,
       });

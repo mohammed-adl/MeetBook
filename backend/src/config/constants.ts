@@ -1,5 +1,5 @@
 export const RATE_LIMIT = 100;
-export const AUTH_RATE_LIMIT = 10;
+export const AUTH_RATE_LIMIT = 103;
 
 export const ACCESS_TOKEN_EXPIRY = "24h";
 export const REFRESH_TOKEN_EXPIRY = "7d";
