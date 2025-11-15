@@ -74,10 +74,14 @@ export default function ClientDashboard() {
               </h3>
 
               <p className="text-sm text-muted-foreground mb-1">
-                {new Date(slot.startTime).toLocaleString()}
+                {new Date(slot.startTime).toLocaleString("en-US", {
+                  timeZone: "UTC",
+                })}
               </p>
               <p className="text-sm text-muted-foreground mb-2">
-                {new Date(slot.endTime).toLocaleString()}
+                {new Date(slot.endTime).toLocaleString("en-US", {
+                  timeZone: "UTC",
+                })}
               </p>
 
               <p className="text-sm text-muted-foreground mb-2">
@@ -112,12 +116,16 @@ export default function ClientDashboard() {
 
             <p className="text-sm text-muted-foreground mb-2">
               <strong>Start:</strong>{" "}
-              {new Date(selectedSlot.startTime).toLocaleString()}
+              {new Date(selectedSlot.startTime).toLocaleString("en-US", {
+                timeZone: "UTC",
+              })}
             </p>
 
             <p className="text-sm text-muted-foreground mb-2">
               <strong>End:</strong>{" "}
-              {new Date(selectedSlot.endTime).toLocaleString()}
+              {new Date(selectedSlot.endTime).toLocaleString("en-US", {
+                timeZone: "UTC",
+              })}
             </p>
 
             <p className="text-sm text-muted-foreground mb-4">

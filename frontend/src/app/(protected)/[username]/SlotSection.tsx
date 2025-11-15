@@ -52,8 +52,13 @@ export default function SlotSection({
               >
                 <div>
                   <p className="font-medium">
-                    {new Date(slot.startTime).toLocaleString()} →{" "}
-                    {new Date(slot.endTime).toLocaleString()}
+                    {new Date(slot.startTime).toLocaleString("en-US", {
+                      timeZone: "UTC",
+                    })}{" "}
+                    →{" "}
+                    {new Date(slot.endTime).toLocaleString("en-US", {
+                      timeZone: "UTC",
+                    })}
                   </p>
                   <p className="text-muted-foreground">
                     Duration: {slot.duration} minutes
