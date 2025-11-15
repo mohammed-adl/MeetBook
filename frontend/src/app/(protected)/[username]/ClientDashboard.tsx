@@ -95,7 +95,7 @@ export default function ClientDashboard() {
 
               <button
                 onClick={() => openModal(slot)}
-                className="w-full bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition"
+                className="w-full bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition cursor-pointer"
               >
                 Book Slot
               </button>
@@ -155,7 +155,7 @@ export default function ClientDashboard() {
               </button>
 
               <button
-                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 onClick={handleBooking}
                 disabled={isBooking}
               >
