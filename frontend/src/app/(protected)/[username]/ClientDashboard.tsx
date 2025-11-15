@@ -147,7 +147,7 @@ export default function ClientDashboard() {
 
             <div className="flex justify-end gap-2 mt-6">
               <button
-                className="px-4 py-2 rounded-lg border hover:bg-muted transition"
+                className="px-4 py-2 rounded-lg cursor-pointer border hover:bg-muted transition cursor-pointer"
                 onClick={closeModal}
                 disabled={isBooking}
               >
