@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export interface SlotFormState {
   date: string;
@@ -29,6 +30,61 @@ export default function SlotModal({
   cost,
   hourlyRate,
 }: SlotModalProps) {
+  const [errors, setErrors] = useState({
+    date: "",
+    startHour: "",
+    endHour: "",
+  });
+
+  useEffect(() => {
+    const newErrors = { date: "", startHour: "", endHour: "" };
+
+    if (!form.date) {
+      newErrors.date = "Date is required";
+    }
+
+    const startNum = parseInt(form.startHour);
+    const endNum = parseInt(form.endHour);
+
+    if (form.startHour === "") {
+      newErrors.startHour = "Start hour is required";
+    } else if (isNaN(startNum) || startNum < 0 || startNum > 23) {
+      newErrors.startHour = "Start hour must be between 0-23";
+    }
+
+    if (form.endHour === "") {
+      newErrors.endHour = "End hour is required";
+    } else if (isNaN(endNum) || endNum < 1 || endNum > 24) {
+      newErrors.endHour = "End hour must be between 1-24";
+    } else if (!isNaN(startNum) && endNum <= startNum) {
+      newErrors.endHour = "End hour must be greater than start hour";
+    }
+
+    setErrors(newErrors);
+  }, [form.date, form.startHour, form.endHour]);
+
+  const handleStartHourChange = (value: string) => {
+    const num = parseInt(value);
+    if (value === "" || (!isNaN(num) && num >= 0 && num <= 23)) {
+      setForm({ ...form, startHour: value });
+    }
+  };
+
+  const handleEndHourChange = (value: string) => {
+    const num = parseInt(value);
+    if (value === "" || (!isNaN(num) && num >= 1 && num <= 24)) {
+      setForm({ ...form, endHour: value });
+    }
+  };
+
+  const canSubmit =
+    !errors.date &&
+    !errors.startHour &&
+    !errors.endHour &&
+    form.date &&
+    form.startHour &&
+    form.endHour;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg shadow-xl max-w-lg w-full">
@@ -46,7 +102,6 @@ export default function SlotModal({
         </div>
 
         <div className="p-6 space-y-4">
-          {/* DATE */}
           <div>
             <label className="block text-sm font-medium mb-2">Date (UTC)</label>
             <input
@@ -56,9 +111,11 @@ export default function SlotModal({
               onChange={(e) => setForm({ ...form, date: e.target.value })}
               className="w-full px-3 py-2 border border-border rounded-lg bg-background"
             />
+            {errors.date && (
+              <p className="text-red-500 text-sm mt-1">{errors.date}</p>
+            )}
           </div>
 
-          {/* HOURS */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -70,28 +127,31 @@ export default function SlotModal({
                 max="23"
                 placeholder="0–23"
                 value={form.startHour}
-                onChange={(e) =>
-                  setForm({ ...form, startHour: e.target.value })
-                }
+                onChange={(e) => handleStartHourChange(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background"
               />
+              {errors.startHour && (
+                <p className="text-red-500 text-sm mt-1">{errors.startHour}</p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">End Hour</label>
               <input
                 type="number"
-                min="0"
-                max="23"
-                placeholder="0–23"
+                min="1"
+                max="24"
+                placeholder="1–24"
                 value={form.endHour}
-                onChange={(e) => setForm({ ...form, endHour: e.target.value })}
+                onChange={(e) => handleEndHourChange(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg bg-background"
               />
+              {errors.endHour && (
+                <p className="text-red-500 text-sm mt-1">{errors.endHour}</p>
+              )}
             </div>
           </div>
 
-          {/* COST SUMMARY */}
           <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-4 space-y-1">
             <p>UTC times</p>
             <p>
@@ -107,7 +167,6 @@ export default function SlotModal({
             </p>
           </div>
 
-          {/* ACTION BUTTONS */}
           <div className="flex gap-3">
             <button
               onClick={onClose}
@@ -118,7 +177,8 @@ export default function SlotModal({
 
             <button
               onClick={onSubmit}
-              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg cursor-pointer"
+              disabled={!canSubmit}
+              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mode === "edit" ? "Update Slot" : "Create Slot"}
             </button>
