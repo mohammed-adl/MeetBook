@@ -25,7 +25,7 @@ export default function LandingPage() {
               </span>
             </div>
             <Link href="/auth">
-              <Button>Get Started</Button>
+              <Button className="cursor-pointer">Get Started</Button>
             </Link>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default function LandingPage() {
             book instantly.
           </p>
           <Link href="/auth">
-            <Button size="lg" className="text-lg">
+            <Button size="lg" className="text-lg cursor-pointer">
               Start Booking Now
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
