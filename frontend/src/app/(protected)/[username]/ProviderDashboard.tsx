@@ -62,23 +62,10 @@ export default function ProviderDashboard() {
   const handleSubmit = () => {
     const { date, startHour, endHour } = form;
 
-    const start = new Date(
-      Date.UTC(
-        Number(date.slice(0, 4)),
-        Number(date.slice(5, 7)) - 1,
-        Number(date.slice(8, 10)),
-        Number(startHour)
-      )
-    );
+    const [year, month, day] = date.split("-").map(Number);
 
-    const end = new Date(
-      Date.UTC(
-        Number(date.slice(0, 4)),
-        Number(date.slice(5, 7)) - 1,
-        Number(date.slice(8, 10)),
-        Number(endHour)
-      )
-    );
+    const start = new Date(Date.UTC(year, month - 1, day, Number(startHour)));
+    const end = new Date(Date.UTC(year, month - 1, day, Number(endHour)));
 
     const payload = {
       startTime: start.toISOString(),
